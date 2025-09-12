@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace facturaApp.services
 {
-    internal class detailsService
+    public class detailsService
     {
         private IdetailsRepository _repository;
         public detailsService()
@@ -24,20 +24,7 @@ namespace facturaApp.services
 
         public bool save(billDetails bd)
         {
-            bool result;
-            var dID = _repository.getbyid(bd.code);
-
-
-            if (dID != null)
-            {
-                result = _repository.save(dID);
-            }
-            else
-            {
-                result = false;
-            }
-
-            return result;
+            return _repository.save(bd);
         }
     }
 }

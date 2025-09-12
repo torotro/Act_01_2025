@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace facturaApp.services
 {
-    public class Billservices
+    public class Billservices :ibillServices
     {
         private IBillrepository _repository;
         public Billservices()
@@ -34,8 +34,8 @@ namespace facturaApp.services
 
             if (existingBill != null)
             {
-                
-                return false;
+
+                return _repository.update(bill);
             }
 
             
@@ -43,10 +43,22 @@ namespace facturaApp.services
 
         }
 
+        public bool delete(int id)
+        {
+            var billBD = _repository.getbyid(id);
+
+            if (billBD == null)
+                return false;
+
+            return _repository.delete(id);
+
+        }
+
         public bool Transaction(Bill bill)
         {
             return Datahelper.GetInstance().executeTransaction(bill);
         }
+
     }
 
 }

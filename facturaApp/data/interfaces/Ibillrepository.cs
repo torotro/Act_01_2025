@@ -12,6 +12,8 @@ namespace facturaApp.data.interfaces
         List<Bill> GetAll();
         Bill? getbyid(int id);
         bool save(Bill bill);
+
+        bool update(Bill bill);
         bool delete(int id);
 
     }

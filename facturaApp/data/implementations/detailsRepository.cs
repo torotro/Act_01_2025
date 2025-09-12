@@ -41,5 +41,6 @@ namespace facturaApp.data.implementations
         {
             throw new NotImplementedException();
         }
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using facturaApp.domain;
 using facturaApp.services;
+using System.Net.NetworkInformation;
 //factura
 //---------------------------------
 Billservices ob = new Billservices();
@@ -74,48 +75,73 @@ Console.WriteLine("------------------------------------------------------");
 Console.WriteLine("crear una factura  -save");
 
 Bill b = new Bill();
-b.id = 2005;
-b.date = DateTime.Now;
-b.Type = 2;
-b.client = "juan pacheco";
+b.date =DateTime.Today;
+b.Type = 1;
+b.client = "spinetta";
 
 bool rc = ob.save(b);
 if (rc)
 {
-    Console.WriteLine($"Se ha creado la factura!");
-    Console.WriteLine("---------------------------------------------------");
+    Console.WriteLine("No se ha podido crear la factura ");
+   
 }
 else
 {
-    Console.WriteLine("No se ha podido crear la factura ");
+    Console.WriteLine($"Se ha creado la factura!");
+    Console.WriteLine("---------------------------------------------------");
 }
+
+Console.WriteLine("actualizar factura -update");
+
+Bill b2 = new Bill();
+b2.id = 2004;
+b2.date=DateTime.Today;
+b2.Type = 2;
+b2.client = "manuel lopez";
+
+bool cr=ob.save(b2);
+if (cr)
+{
+    Console.WriteLine("No se ha podido actualizar la factura porque no existe");
+
+}
+else
+{
+    Console.WriteLine($"Se ha actualizado la factura!");
+    Console.WriteLine("---------------------------------------------------");
+}
+
 
 Console.WriteLine("---------------------------------------------------");
 
 Console.WriteLine("crear una factura y su detalle -save");
 
-Bill bill = new Bill();
-bill.id = 2004;  
-bill.date = DateTime.Now;
-bill.Type = 1; 
-bill.client = "lisa Pacheco";
-bill.details = new List<billDetails>();
+Bill complexbill = new Bill()
+{
+    date = DateTime.Now,
+    Type = 1,
+    client = "elvis presley",
+    details = new List<billDetails>()
+    {
+        new billDetails()
+        {
+          id = 1,
+          count = 1,
+          price = 4500
+        }
+    }
+};
 
-
-billDetails details = new billDetails();
-details.id = 1;    
-details.count = 3;
-details.nro = bill.id;
-details.price = 13.500;     
-
-bill.details.Add(details);
-
-bool resultCreate = ob.Transaction(bill);
+bool resultCreate = ob.Transaction(complexbill);
 
 if (resultCreate)
 {
+
     Console.WriteLine($"Se ha creado la factura!");
     Console.WriteLine("---------------------------------------------------");
+
+   
+
 }
 else
 {
@@ -125,54 +151,21 @@ else
 Console.WriteLine("---------------------------------------------------");
 
 
+Console.WriteLine("eliminar  factura -delete");
+
+bool result= ob.delete(2016);
+
+if (result)
+{
+
+    Console.WriteLine($"Se he eliminado la factura!");
+    Console.WriteLine("---------------------------------------------------");
 
 
-
-//Console.WriteLine("articulos (cosa opcional)");
-
-//Console.WriteLine("------------------------------------------------------");
-////(prueba) articulo
-////---------------------------------
-
-//productServices o = new productServices();
-
-//Console.WriteLine("obtener  los articulos - getall");
-
-//List<Product> lp = o.GetProducts();
-
-//if (lp.Count > 0)
-//{
-//    foreach(Product p in lp)
-//    {
-//        Console.WriteLine(p);
-//        Console.WriteLine("------------------------------------------------------");
-//    }
-
-  
-//}
-//else 
-//{
-//    Console.WriteLine("no hay articulos");
-      
-//}
-
-//Console.WriteLine("obtener articulos por id - getbyid");
-//Product? p5 = o.GetProduct(5);
-
-//if(p5 != null)
-//{
-//    Console.WriteLine(p5);
-//    Console.WriteLine("------------------------------------------------------");
-//}
-//else
-//{
-//    Console.WriteLine("no existe ese articulo");
-//}
-
-
-
-
-
-
+}
+else
+{
+    Console.WriteLine("No se ha podido eliminar la factura");
+}
 
 

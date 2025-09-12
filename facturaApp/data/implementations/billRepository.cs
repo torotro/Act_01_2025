@@ -15,7 +15,14 @@ namespace facturaApp.data.implementations
     {
         public bool delete(int id)
         {
-            throw new NotImplementedException();
+            List<parameters> param = new List<parameters>()
+            {
+               new parameters("@id", id)
+            };
+
+            return Datahelper.GetInstance().ExecuteSPT("sp_eliminar_Facturas_nro", param);
+            
+
         }
 
         public List<Bill> GetAll()
@@ -24,17 +31,19 @@ namespace facturaApp.data.implementations
 
             var dt = Datahelper.GetInstance().ExecuteSPQuery("sp_recuperar_Facturas");
             foreach (DataRow item in dt.Rows)
+
             {
 
                 Bill b = new Bill();
-                b.id=(int)item["nroFactura"];
-                b.date = (DateTime)item["fecha"];
-                b.id = (int)item["idforma"];
-                b.client = (string)item["cliente"];
-
-
-               
                 
+                b.id = (int)item["nroFactura"];
+                b.date = (DateTime)item["fecha"];
+                b.Type = (int)item["idforma"];
+                b.client = (string)item["cliente"];
+                List<parameters> details = new List<parameters>();
+           
+     
+               
                 lst.Add(b);
             }
 
@@ -67,6 +76,7 @@ namespace facturaApp.data.implementations
                
                 Bill br = new Bill()
                 {
+                    
                     id= (int)dt.Rows[0]["nroFactura"],
                     date = (DateTime)dt.Rows[0]["fecha"],
                     Type = (int)dt.Rows[0]["idforma"],
@@ -84,13 +94,29 @@ namespace facturaApp.data.implementations
         {
             List<parameters> param = new List<parameters>()
             {
-                new parameters("@nro", bill.id),
+
+                //new parameters("@nro", bill.id),
                 new parameters("@fecha", bill.date),
                 new parameters("@tipo", bill.Type),
                 new parameters("@cliente", bill.client)
             };
 
             return Datahelper.GetInstance().ExecuteSPT("sp_insertar_Maestro", param);
+
+        }
+        
+        public bool update(Bill bill)
+        {
+            List<parameters> param = new List<parameters>()
+            {
+
+                new parameters("@nro", bill.id),
+                new parameters("@fecha", bill.date),
+                new parameters("@tipo", bill.Type),
+                new parameters("@cliente", bill.client)
+            };
+
+            return Datahelper.GetInstance().ExecuteSPT("sp_actualizar_Maestro", param);
 
         }
     }

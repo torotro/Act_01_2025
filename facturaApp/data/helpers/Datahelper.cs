@@ -12,14 +12,14 @@ using System.Transactions;
 
 namespace facturaApp.data
 {
-    internal class Datahelper
+    public class Datahelper
     {
         private static Datahelper? _instance;
         private SqlConnection _connection;
 
         private Datahelper()
         {
-            _connection = new SqlConnection(@"Data Source=CARMEN\SQLEXPRESS;Initial Catalog=facturaPA;Integrated Security=True;Encrypt=False");
+            _connection = new SqlConnection(@"Data Source=CARMEN\SQLEXPRESS;Initial Catalog=ACT_factura;Integrated Security=True;Encrypt=False");
         }
         public static Datahelper GetInstance()
         {
@@ -113,44 +113,42 @@ namespace facturaApp.data
                     using (SqlCommand cmd = new SqlCommand("sp_insertar_Maestro", _connection, t))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
-
-                        cmd.Parameters.AddWithValue("@nro", b.id);
                         cmd.Parameters.AddWithValue("@fecha", b.date);
                         cmd.Parameters.AddWithValue("@tipo", b.Type);   
                         cmd.Parameters.AddWithValue("@cliente", b.client);
+                        int nroFactura;
+                        nroFactura = Convert.ToInt32(cmd.ExecuteScalar());
 
-                        int affectedRows = cmd.ExecuteNonQuery();
-                        if (affectedRows <= 0)
+
+
+                        foreach (billDetails bd in b.details)
                         {
-                            t.Rollback();
-                            return false;
-                        }
-                    }
-
-                    
-                    foreach (billDetails bd in b.details)
-                    {
-                        using (SqlCommand db = new SqlCommand("sp_insertar_Detalle", _connection, t))
-                        {
-                            db.CommandType = CommandType.StoredProcedure;
-                            int nro = 1;
-                            db.Parameters.AddWithValue("@articulo", bd.id);
-                            db.Parameters.AddWithValue("@cantidad", bd.count);
-                            db.Parameters.AddWithValue("@nroFactura", nro); 
-                            db.Parameters.AddWithValue("@monto", bd.price);
-
-                            int affectedRowsD = db.ExecuteNonQuery();
-                            if (affectedRowsD <= 0)
+                            using (SqlCommand db = new SqlCommand("sp_insertar_Detalle", _connection, t))
                             {
-                                t.Rollback();
-                                return false;
+                                db.CommandType = CommandType.StoredProcedure;
+                                
+                                db.Parameters.AddWithValue("@articulo", bd.id);
+                                db.Parameters.AddWithValue("@cantidad", bd.count);
+                                db.Parameters.AddWithValue("@nroFactura",nroFactura);
+                                db.Parameters.AddWithValue("@monto", bd.price);
+
+                                int affectedRowsD = db.ExecuteNonQuery();
+
+                                if (affectedRowsD <= 0)
+                                {
+                                    t.Rollback();
+                                    return false;
+                                }
                             }
+                            
+
                         }
+
+                        t.Commit();
+                        success = true;
                     }
 
-                    
-                    t.Commit();
-                    success = true;
+                   
                 }
                 catch (SqlException ex)
                 {
